@@ -1,0 +1,5 @@
+version: 1.2
+workflows:
+  - name: GTEx-RNAseq
+    subclass: WDL
+    primaryDescriptorPath: /GTEx-RNAseq.wdl
