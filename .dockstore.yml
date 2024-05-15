@@ -3,3 +3,6 @@ workflows:
   - name: GTEx-RNAseq
     subclass: WDL
     primaryDescriptorPath: /GTEx-RNAseq.wdl
+        authors:
+            - name: Garrett Lam
+              email: glam@broadinstitute.org
