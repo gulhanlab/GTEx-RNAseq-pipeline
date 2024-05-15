@@ -1,5 +1,3 @@
-version 1.0
-
 import "https://api.firecloud.org/ga4gh/v1/tools/broadinstitute_gtex:fastqc_v1-0_BETA/versions/2/plain-WDL/descriptor" as fastqc_wdl
 import "https://api.firecloud.org/ga4gh/v1/tools/broadinstitute_gtex:star_v1-0_BETA/versions/8/plain-WDL/descriptor" as star_wdl
 import "https://api.firecloud.org/ga4gh/v1/tools/broadinstitute_gtex:markduplicates_v1-0_BETA/versions/6/plain-WDL/descriptor" as markduplicates_wdl
