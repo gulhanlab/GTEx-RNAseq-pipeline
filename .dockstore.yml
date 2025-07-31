@@ -3,13 +3,26 @@ workflows:
   - name: GTEx-RNAseq-FASTQ
     description: GTEx RNAseq pipeline for FASTQ input
     subclass: WDL
+    publish: true
     primaryDescriptorPath: /GTEx-RNAseq.wdl
     authors:
       - name: Garrett Lam
+        email: glam@broadinstitute.org
   
   - name: GTEx-RNAseq-BAM
     description: GTEx RNAseq pipeline for BAM input
     subclass: WDL
+    publish: true
     primaryDescriptorPath: /GTEx-RNAseq_bam.wdl
     authors:
       - name: Garrett Lam
+        email: glam@broadinstitute.org
+  
+  - name: samtools_idx
+    description: Task to index BAM files using samtools
+    subclass: WDL
+    publish: true
+    primaryDescriptorPath: /samtools_idx.wdl
+    authors:
+      - name: Garrett Lam
+        email: glam@broadinstitute.org
