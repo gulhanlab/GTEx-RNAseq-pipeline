@@ -35,7 +35,7 @@ task samtofastq {
     }
 
     runtime {
-        docker: "gcr.io/broad-cga-francois-gtex/gtex_rnaseq:V10"
+        docker: "gcr.io/broad-cga-francois-gtex/gtex_rnaseq:V11"
         memory: "${memory}GB"
         disks: "local-disk ${disk_space} HDD"
         cpu: "${num_threads}"
@@ -80,7 +80,7 @@ task fastqc {
     }
 
     runtime {
-        docker: "gcr.io/broad-cga-francois-gtex/gtex_rnaseq:V10"
+        docker: "gcr.io/broad-cga-francois-gtex/gtex_rnaseq:V11"
         memory: "${memory}GB"
         disks: "local-disk ${disk_space} HDD"
         cpu: "${num_threads}"
@@ -215,7 +215,7 @@ task star {
     }
 
     runtime {
-        # V10 used 2.7.11a that doesn't have quantTranscriptomeSAMoutput
+        # V11 used 2.7.11a that doesn't have quantTranscriptomeSAMoutput
         # V11 uses 2.7.11b that does have quantTranscriptomeSAMoutput BanSingleEnd_ExtendSoftclip
         # https://github.com/alexdobin/STAR/releases
         docker: "gcr.io/broad-cga-francois-gtex/gtex_rnaseq:V11" 
@@ -262,7 +262,7 @@ task markduplicates {
     }
 
     runtime {
-        docker: "gcr.io/broad-cga-francois-gtex/gtex_rnaseq:V10"
+        docker: "gcr.io/broad-cga-francois-gtex/gtex_rnaseq:V11"
         memory: "${memory}GB"
         disks: "local-disk ${disk_space} HDD"
         cpu: "${num_threads}"
@@ -313,7 +313,7 @@ task rsem {
     }
 
     runtime {
-        docker: "gcr.io/broad-cga-francois-gtex/gtex_rnaseq:V10"
+        docker: "gcr.io/broad-cga-francois-gtex/gtex_rnaseq:V11"
         memory: "${memory}GB"
         disks: "local-disk ${disk_space} HDD"
         cpu: "${num_threads}"
@@ -363,7 +363,7 @@ task rnaseqc2 {
     }
 
     runtime {
-        docker: "gcr.io/broad-cga-francois-gtex/gtex_rnaseq:V10"
+        docker: "gcr.io/broad-cga-francois-gtex/gtex_rnaseq:V11"
         memory: "${memory}GB"
         disks: "local-disk ${disk_space} HDD"
         cpu: "${num_threads}"
