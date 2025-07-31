@@ -4,7 +4,7 @@ workflows:
     description: GTEx RNAseq pipeline for FASTQ input
     subclass: WDL
     publish: true
-    primaryDescriptorPath: /GTEx-RNAseq.wdl
+    primaryDescriptorPath: /GTEx-RNAseq_fastq.wdl
     authors:
       - name: Garrett Lam
         email: glam@broadinstitute.org
