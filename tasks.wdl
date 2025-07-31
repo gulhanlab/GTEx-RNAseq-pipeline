@@ -1,5 +1,4 @@
 # WDL draft-2
-# https://github.com/broadinstitute/gtex-pipeline/tree/master/rnaseq
 
 # samtofastq
 task samtofastq {

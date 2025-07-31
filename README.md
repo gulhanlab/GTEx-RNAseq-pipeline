@@ -1,5 +1,4 @@
 # GTEx-RNAseq-pipeline
-This workflow is a clone of GTEx RNA-seq pipeline (FASTQ input) v7 from FireCloud (broadinstitute_gtex/rnaseq_fastq_star_rsem_rnaseqc_v1-2_BETA)
-https://api.firecloud.org/ga4gh/v1/tools/broadinstitute_gtex:rnaseq_bam_star_rsem_rnaseqc_v1-2_BETA/versions/7/plain-WDL/descriptor
+This repository contains WDL workflows for processing RNA seq data using FASTQ or BAM inputs. This is a clone of the GTEx Consortium RNAseq repo with minor improvements, please see: https://github.com/broadinstitute/gtex-pipeline/tree/master/rnaseq
 
-Author: Francois Aguet (francois@broadinstitute.org)
+Please note that the WDL here is written in WDL draft-2 and is not directly transferable to WDL 1.0 or development.
