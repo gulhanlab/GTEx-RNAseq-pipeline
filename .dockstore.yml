@@ -3,13 +3,13 @@ workflows:
   - name: GTEx-RNAseq-FASTQ
     description: GTEx RNAseq pipeline for FASTQ input
     subclass: WDL
-    primaryDescriptorPath: GTEx-RNAseq.wdl
+    primaryDescriptorPath: /GTEx-RNAseq.wdl
     authors:
       - name: Garrett Lam
   
   - name: GTEx-RNAseq-BAM
     description: GTEx RNAseq pipeline for BAM input
     subclass: WDL
-    primaryDescriptorPath: GTEx-RNAseq_bam.wdl
+    primaryDescriptorPath: /GTEx-RNAseq_bam.wdl
     authors:
       - name: Garrett Lam
