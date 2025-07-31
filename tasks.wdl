@@ -1,6 +1,3 @@
-version 1.0
-
-
 # fastqc
 task fastqc {
 
