@@ -26,8 +26,10 @@ task samtofastq {
         fi
 
         mkdir samtofastq  # workaround for named pipes
+        echo $(date +"[%Y-%m-%d %H:%M:%S] Running SamToFastq...")
         python3 -u /src/run_SamToFastq.py $input_bam_abs -p ${prefix} --output_dir samtofastq --memory ${java_memory}
         mv samtofastq/${prefix}_*.fastq.gz .
+        echo $(date +"[%Y-%m-%d %H:%M:%S] SamToFastq completed successfully")
     }
 
     output {
@@ -65,11 +67,13 @@ task fastqc {
 
     command <<<
         set -euo pipefail
+        echo $(date +"[%Y-%m-%d %H:%M:%S] Running FastQC...")
         fastqc ${fastq1} ${fastq2} \
             --threads ${num_threads} \
             --outdir .
         unzip -p ${fastq1_name}_fastqc.zip ${fastq1_name}_fastqc/fastqc_data.txt | gzip > ${fastq1_name}.fastqc_data.txt.gz
         unzip -p ${fastq2_name}_fastqc.zip ${fastq2_name}_fastqc/fastqc_data.txt | gzip > ${fastq2_name}.fastqc_data.txt.gz
+        echo $(date +"[%Y-%m-%d %H:%M:%S] FastQC completed successfully")
     >>>
 
     output {
@@ -161,7 +165,7 @@ task star {
         echo $fastq2_abs
 
         # extract index
-        echo $(date +"[%b %d %H:%M:%S] Extracting STAR index")
+        echo $(date +"[%Y-%m-%d %H:%M:%S] Extracting STAR index")
         mkdir star_index
         tar -xvvf ${star_index} -C star_index --strip-components=1
 
@@ -172,6 +176,7 @@ task star {
         touch star_out/${prefix}.Chimeric.out.sorted.bam.bai
         touch star_out/${prefix}.ReadsPerGene.out.tab  # run_STAR.py will gzip
 
+        echo $(date +"[%Y-%m-%d %H:%M:%S] Running STAR alignment...")
         /src/run_STAR.py \
             star_index $fastq1_abs $fastq2_abs ${prefix} \
             --output_dir star_out \
@@ -202,6 +207,7 @@ task star {
             ${"--chimOutJunctionFormat " + chimOutJunctionFormat} \
             ${"--sjdbFileChrStartEnd " + sjdbFileChrStartEnd} \
             --threads ${num_threads}
+        echo $(date +"[%Y-%m-%d %H:%M:%S] STAR alignment completed successfully")
     }
 
     output {
@@ -252,11 +258,17 @@ task markduplicates {
 
     command {
         set -euo pipefail
+
+        echo $(date +"[%Y-%m-%d %H:%M:%S] Running MarkDuplicates...")
         python3 -u /src/run_MarkDuplicates.py ${input_bam} ${prefix} \
             --memory ${java_memory} \
             ${"--max_records_in_ram " + max_records_in_ram} \
             ${"--sorting_collection_size_ratio " + sorting_collection_size_ratio}
+        echo $(date +"[%Y-%m-%d %H:%M:%S] MarkDuplicates completed successfully")
+
+        echo $(date +"[%Y-%m-%d %H:%M:%S] Indexing marked duplicate bam...")
         samtools index ${output_bam}
+        echo $(date +"[%Y-%m-%d %H:%M:%S] Indexing completed successfully")
     }
 
     output {
@@ -302,6 +314,7 @@ task rsem {
         mkdir rsem_reference
         tar -xvvf ${rsem_reference} -C rsem_reference --strip-components=1
 
+        echo $(date +"[%Y-%m-%d %H:%M:%S] Running RSEM calculate-expression...")
         /src/run_RSEM.py \
             ${"--max_frag_len " + max_frag_len} \
             ${"--estimate_rspd " + estimate_rspd} \
@@ -310,6 +323,7 @@ task rsem {
             --threads ${num_threads} \
             rsem_reference ${transcriptome_bam} ${prefix}
         gzip *.results
+        echo $(date +"[%Y-%m-%d %H:%M:%S] RSEM calculate-expression completed successfully")
     }
 
     output {
@@ -350,13 +364,13 @@ task rnaseqc2 {
 
     command {
         set -euo pipefail
-        echo $(date +"[%b %d %H:%M:%S] Running RNA-SeQC 2")
+        echo $(date +"[%Y-%m-%d %H:%M:%S] Running RNA-SeQC 2...")
         touch ${sample_id}.fragmentSizes.txt
         touch ${sample_id}.gc_content.tsv
         rnaseqc ${genes_gtf} ${bam_file} . -s ${sample_id} ${"--bed " + intervals_bed} ${"--stranded " + strandedness} ${"--fasta " + reference_fasta} -vv ${flags}
         echo "  * compressing outputs"
         gzip *.gct
-        echo $(date +"[%b %d %H:%M:%S] done")
+        echo $(date +"[%Y-%m-%d %H:%M:%S] RNA-SeQC 2 completed successfully")
     }
 
     output {
