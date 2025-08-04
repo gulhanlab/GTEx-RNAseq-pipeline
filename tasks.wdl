@@ -3,28 +3,30 @@
 # samtofastq
 task samtofastq {
 
-    File input_bam_cram
+    File input_bam
     String prefix
-    File? reference_fasta
-    File? reference_fasta_index
+    # File? reference_fasta
+    # File? reference_fasta_index
 
     Float memory
     Int java_memory = floor(memory - 0.5)
-    Int disk_space
+    # Int disk_space
     Int num_threads
     Int num_preempt
+
+    Int diskGB = ceil(size(input_bam) * 1.25)
 
     command {
         set -euo pipefail
 
         # make sure path is absolute
-        input_bam_abs=${input_bam_cram}
+        input_bam_abs=${input_bam}
         if [[ $input_bam_abs != /* ]]; then
             input_bam_abs=$PWD/$input_bam_abs
         fi
 
         mkdir samtofastq  # workaround for named pipes
-        python3 -u /src/run_SamToFastq.py $input_bam_abs -p ${prefix} ${"--reference_fasta " + reference_fasta} --output_dir samtofastq --memory ${java_memory}
+        python3 -u /src/run_SamToFastq.py $input_bam_abs -p ${prefix} --output_dir samtofastq --memory ${java_memory}
         mv samtofastq/${prefix}_*.fastq.gz .
     }
 
@@ -36,7 +38,7 @@ task samtofastq {
     runtime {
         docker: "gcr.io/broad-cga-francois-gtex/gtex_rnaseq:V11"
         memory: "${memory}GB"
-        disks: "local-disk ${disk_space} HDD"
+        disks: "local-disk ${diskGB} HDD"
         cpu: "${num_threads}"
         preemptible: "${num_preempt}"
     }
@@ -53,9 +55,10 @@ task fastqc {
     File? fastq2
 
     Float memory
-    Int disk_space
+    # Int disk_space
     Int num_threads
     Int num_preempt
+    Int diskGB = ceil((size(fastq1) + size(fastq2)) * 1.25)
 
     String fastq1_name = sub(sub(basename(fastq1), "\\.fastq.gz$", ""), "\\.fq.gz$", "" )
     String fastq2_name = sub(sub(basename(fastq2), "\\.fastq.gz$", ""), "\\.fq.gz$", "" )
@@ -81,7 +84,7 @@ task fastqc {
     runtime {
         docker: "gcr.io/broad-cga-francois-gtex/gtex_rnaseq:V11"
         memory: "${memory}GB"
-        disks: "local-disk ${disk_space} HDD"
+        disks: "local-disk ${diskGB} HDD"
         cpu: "${num_threads}"
         preemptible: "${num_preempt}"
     }
@@ -127,9 +130,10 @@ task star {
     File? sjdbFileChrStartEnd
 
     Int memory
-    Int disk_space
+    # Int disk_space
     Int num_threads
     Int num_preempt
+    Int diskGB = ceil((size(fastq1) + size(fastq2) + size(star_index)) * 2.5)
 
     command {
         set -euo pipefail
@@ -219,7 +223,7 @@ task star {
         # https://github.com/alexdobin/STAR/releases
         docker: "gcr.io/broad-cga-francois-gtex/gtex_rnaseq:V11" 
         memory: "${memory}GB"
-        disks: "local-disk ${disk_space} HDD"
+        disks: "local-disk ${diskGB} HDD"
         cpu: "${num_threads}"
         preemptible: "${num_preempt}"
     }
@@ -239,9 +243,10 @@ task markduplicates {
 
     Float memory
     Int java_memory = floor(memory - 0.5)
-    Int disk_space
+    # Int disk_space
     Int num_threads
     Int num_preempt
+    Int diskGB = ceil(size(input_bam) * 2.5)
 
     String output_bam = sub(basename(input_bam), "\\.bam$", ".md.bam")
 
@@ -263,7 +268,7 @@ task markduplicates {
     runtime {
         docker: "gcr.io/broad-cga-francois-gtex/gtex_rnaseq:V11"
         memory: "${memory}GB"
-        disks: "local-disk ${disk_space} HDD"
+        disks: "local-disk ${diskGB} HDD"
         cpu: "${num_threads}"
         preemptible: "${num_preempt}"
     }
@@ -282,9 +287,10 @@ task rsem {
     String prefix
 
     Int memory
-    Int disk_space
+    # Int disk_space
     Int num_threads
     Int num_preempt
+    Int diskGB = ceil(size(transcriptome_bam) * 1.25)
 
     Int? max_frag_len
     String? estimate_rspd
@@ -314,7 +320,7 @@ task rsem {
     runtime {
         docker: "gcr.io/broad-cga-francois-gtex/gtex_rnaseq:V11"
         memory: "${memory}GB"
-        disks: "local-disk ${disk_space} HDD"
+        disks: "local-disk ${diskGB} HDD"
         cpu: "${num_threads}"
         preemptible: "${num_preempt}"
     }
@@ -337,9 +343,10 @@ task rnaseqc2 {
     String? flags
 
     Int memory
-    Int disk_space
+    # Int disk_space
     Int num_threads
     Int num_preempt
+    Int diskGB = ceil((size(bam_file) + size(genes_gtf) + size(intervals_bed) + size(reference_fasta)) * 1.5)
 
     command {
         set -euo pipefail
@@ -364,7 +371,7 @@ task rnaseqc2 {
     runtime {
         docker: "gcr.io/broad-cga-francois-gtex/gtex_rnaseq:V11"
         memory: "${memory}GB"
-        disks: "local-disk ${disk_space} HDD"
+        disks: "local-disk ${diskGB} HDD"
         cpu: "${num_threads}"
         preemptible: "${num_preempt}"
     }
