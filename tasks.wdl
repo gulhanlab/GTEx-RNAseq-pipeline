@@ -14,7 +14,7 @@ task samtofastq {
     Int num_threads
     Int num_preempt
 
-    Int diskGB = ceil(size(input_bam) * 5) 
+    Int diskGB = ceil(size(input_bam, "GB") * 5)
 
     command {
         set -euo pipefail
@@ -60,7 +60,7 @@ task fastqc {
     # Int disk_space
     Int num_threads
     Int num_preempt
-    Int diskGB = ceil((size(fastq1) + size(fastq2)) * 1.5)
+    Int diskGB = ceil((size(fastq1, "GB") + size(fastq2, "GB")) * 1.5)
 
     String fastq1_name = sub(sub(basename(fastq1), "\\.fastq.gz$", ""), "\\.fq.gz$", "" )
     String fastq2_name = sub(sub(basename(fastq2), "\\.fastq.gz$", ""), "\\.fq.gz$", "" )
@@ -137,7 +137,7 @@ task star {
     # Int disk_space
     Int num_threads
     Int num_preempt
-    Int diskGB = ceil((size(fastq1) + size(fastq2) + size(star_index)) * 2.5)
+    Int diskGB = ceil((size(fastq1, "GB") + size(fastq2, "GB") + size(star_index, "GB")) * 2.5)
 
     command {
         set -euo pipefail
@@ -252,7 +252,7 @@ task markduplicates {
     # Int disk_space
     Int num_threads
     Int num_preempt
-    Int diskGB = ceil(size(input_bam) * 2.5)
+    Int diskGB = ceil(size(input_bam, "GB") * 2.5)
 
     String output_bam = sub(basename(input_bam), "\\.bam$", ".md.bam")
 
@@ -302,7 +302,7 @@ task rsem {
     # Int disk_space
     Int num_threads
     Int num_preempt
-    Int diskGB = ceil(size(transcriptome_bam) * 1.5)
+    Int diskGB = ceil(size(transcriptome_bam, "GB") * 1.5)
 
     Int? max_frag_len
     String? estimate_rspd
@@ -360,7 +360,7 @@ task rnaseqc2 {
     # Int disk_space
     Int num_threads
     Int num_preempt
-    Int diskGB = ceil((size(bam_file) + size(genes_gtf) + size(intervals_bed) + size(reference_fasta)) * 1.5)
+    Int diskGB = ceil((size(bam_file, "GB") + size(genes_gtf, "GB") + size(intervals_bed, "GB") + size(reference_fasta, "GB")) * 1.5)
 
     command {
         set -euo pipefail
