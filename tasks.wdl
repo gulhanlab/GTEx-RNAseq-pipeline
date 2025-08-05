@@ -60,7 +60,7 @@ task fastqc {
     # Int disk_space
     Int num_threads
     Int num_preempt
-    Int diskGB = ceil((size(fastq1) + size(fastq2)) * 1.25)
+    Int diskGB = ceil((size(fastq1) + size(fastq2)) * 1.5)
 
     String fastq1_name = sub(sub(basename(fastq1), "\\.fastq.gz$", ""), "\\.fq.gz$", "" )
     String fastq2_name = sub(sub(basename(fastq2), "\\.fastq.gz$", ""), "\\.fq.gz$", "" )
@@ -302,7 +302,7 @@ task rsem {
     # Int disk_space
     Int num_threads
     Int num_preempt
-    Int diskGB = ceil(size(transcriptome_bam) * 1.25)
+    Int diskGB = ceil(size(transcriptome_bam) * 1.5)
 
     Int? max_frag_len
     String? estimate_rspd
