@@ -8,7 +8,7 @@ task samtofastq {
     # File? reference_fasta
     # File? reference_fasta_index
 
-    Float memory
+    Int memory
     Int java_memory = floor(memory - 0.5)
     # Int disk_space
     Int num_threads
