@@ -14,7 +14,7 @@ task samtofastq {
     Int num_threads
     Int num_preempt
 
-    Int diskGB = ceil(size(input_bam) * 1.25)
+    Int diskGB = ceil(size(input_bam) * 5) 
 
     command {
         set -euo pipefail
