@@ -13,7 +13,6 @@ task samtofastq {
         Int num_cpu
         Int num_preempt
     }
-
     Int java_memory = floor(memoryMB - 0.5)
     Int diskGB = ceil(size(input_bam, "GB") * 7.5)
 
@@ -61,8 +60,8 @@ task samtofastq {
 
     runtime {
         docker: "gcr.io/broad-cga-francois-gtex/gtex_rnaseq:V11"
-        memory: memoryMB + " MB"
-        disks: "local-disk " + diskGB + " HDD"
+        memory: "~{memoryMB} MB"
+        disks: "local-disk ~{diskGB} HDD"
         cpu: num_cpu
         preemptible: num_preempt
     }
@@ -72,53 +71,57 @@ task samtofastq {
     }
 }
 
-# # fastqc
-# task fastqc {
+# fastqc
+task fastqc {
+    input {
+        File fastq1
+        File fastq2
 
-#     File fastq1
-#     File? fastq2
+        Int memoryMB
+        Int num_cpu
+        Int num_preempt
+    }
+    Int diskGB = ceil((size(fastq1, "GB") + size(fastq2, "GB")) * 2)
 
-#     Float memory
-#     # Int disk_space
-#     Int num_threads
-#     Int num_preempt
-#     Int diskGB = ceil((size(fastq1, "GB") + size(fastq2, "GB")) * 2)
+    String fastq1_name = sub(sub(basename(fastq1), "\\.fastq.gz$", ""), "\\.fq.gz$", "")
+    String fastq2_name = sub(sub(basename(fastq2), "\\.fastq.gz$", ""), "\\.fq.gz$", "")
 
-#     String fastq1_name = sub(sub(basename(fastq1), "\\.fastq.gz$", ""), "\\.fq.gz$", "" )
-#     String fastq2_name = sub(sub(basename(fastq2), "\\.fastq.gz$", ""), "\\.fq.gz$", "" )
+    String dollar = "$"
 
-#     command <<<
-#         set -euo pipefail
-#         echo $(date +"[%Y-%m-%d %H:%M:%S] Running FastQC...")
-#         fastqc ${fastq1} ${fastq2} \
-#             --threads ${num_threads} \
-#             --outdir .
-#         unzip -p ${fastq1_name}_fastqc.zip ${fastq1_name}_fastqc/fastqc_data.txt | gzip > ${fastq1_name}.fastqc_data.txt.gz
-#         unzip -p ${fastq2_name}_fastqc.zip ${fastq2_name}_fastqc/fastqc_data.txt | gzip > ${fastq2_name}.fastqc_data.txt.gz
-#         echo $(date +"[%Y-%m-%d %H:%M:%S] FastQC completed successfully")
-#     >>>
+    command <<<
+        set -euo pipefail
+        echo "$(date +'[%Y-%m-%d %H:%M:%S]') Running FastQC..."
+        fastqc ~{fastq1} ~{fastq2} \
+            --threads ~{num_cpu} \
+            --outdir .
+        
+        unzip -p ~{fastq1_name}_fastqc.zip ~{fastq1_name}_fastqc/fastqc_data.txt | gzip > ~{fastq1_name}.fastqc_data.txt.gz
+        unzip -p ~{fastq2_name}_fastqc.zip ~{fastq2_name}_fastqc/fastqc_data.txt | gzip > ~{fastq2_name}.fastqc_data.txt.gz
 
-#     output {
-#         File fastq1_fastqc_html = "${fastq1_name}_fastqc.html"
-#         File fastq1_fastqc_zip =  "${fastq1_name}_fastqc.zip"
-#         File fastq1_fastqc_data = "${fastq1_name}.fastqc_data.txt.gz"
-#         File fastq2_fastqc_html = "${fastq2_name}_fastqc.html"
-#         File fastq2_fastqc_zip =  "${fastq2_name}_fastqc.zip"
-#         File fastq2_fastqc_data = "${fastq2_name}.fastqc_data.txt.gz"
-#     }
+        echo "$(date +'[%Y-%m-%d %H:%M:%S]') FastQC completed successfully"
+    >>>
 
-#     runtime {
-#         docker: "gcr.io/broad-cga-francois-gtex/gtex_rnaseq:V11"
-#         memory: "${memory}GB"
-#         disks: "local-disk ${diskGB} HDD"
-#         cpu: "${num_threads}"
-#         preemptible: "${num_preempt}"
-#     }
+    output {
+        File fastq1_fastqc_html = "~{fastq1_name}_fastqc.html"
+        File fastq1_fastqc_zip  = "~{fastq1_name}_fastqc.zip"
+        File fastq1_fastqc_data = "~{fastq1_name}.fastqc_data.txt.gz"
+        File fastq2_fastqc_html = "~{fastq2_name}_fastqc.html"
+        File fastq2_fastqc_zip  = "~{fastq2_name}_fastqc.zip"
+        File fastq2_fastqc_data = "~{fastq2_name}.fastqc_data.txt.gz"
+    }
 
-#     meta {
-#         author: "Francois Aguet"
-#     }
-# }
+    runtime {
+        docker: "gcr.io/broad-cga-francois-gtex/gtex_rnaseq:V11"
+        memory: "~{memoryMB} MB"
+        disks: "local-disk ~{diskGB} HDD"
+        cpu: num_cpu
+        preemptible: num_preempt
+    }
+
+    # meta {
+    #     author: "Francois Aguet"
+    # }
+}
 
 # # star
 # task star {
