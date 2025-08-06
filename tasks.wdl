@@ -301,7 +301,6 @@ task markduplicates {
         File metrics = metrics_file
     }
 
-
     runtime {
         docker: "gcr.io/broad-cga-francois-gtex/gtex_rnaseq:V11"
         memory: "~{memoryMB} MB"
