@@ -21,14 +21,12 @@ task samtofastq {
     String fastq1_gz = fastq1 + ".gz"
     String fastq2_gz = fastq2 + ".gz"
 
-    String dollar = "$"
-
     command <<< 
         set -euxo pipefail
 
         echo "$(date +'[%Y-%m-%d %H:%M:%S]') Running SamToFastq..."
 
-        java "-Xmx~{dollar}~{java_memory}m" -jar /opt/picard-tools/picard.jar SamToFastq \
+        java "-Xmx~{java_memory}m" -jar /opt/picard-tools/picard.jar SamToFastq \
             INPUT='~{input_bam}' \
             INCLUDE_NON_PF_READS=true \
             INCLUDE_NON_PRIMARY_ALIGNMENTS=false \
@@ -271,14 +269,13 @@ task markduplicates {
     String output_bam = sub(basename(input_bam), "\\.bam$", ".md.bam")
     String output_bai = output_bam + ".bai"
     String metrics_file = prefix + ".marked_dup_metrics.txt"
-    String dollar = "$"
 
     command <<<
         set -euo pipefail
 
         echo "$(date +'[%Y-%m-%d %H:%M:%S]') Running MarkDuplicates..."
 
-        java "-Xmx~{dollar}~{java_memory}m" -jar /opt/picard-tools/picard.jar MarkDuplicates \
+        java "-Xmx~{java_memory}m" -jar /opt/picard-tools/picard.jar MarkDuplicates \
             I='~{input_bam}' \
             O='~{output_bam}' \
             M='~{metrics_file}' \
