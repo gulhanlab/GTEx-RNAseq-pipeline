@@ -13,7 +13,7 @@ task samtofastq {
         Int num_preempt
     }
     Int java_memory = floor(memoryMB - 500)
-    Int diskGB = ceil(size(input_bam, "GB") * 7.5)
+    Int diskGB = ceil(size(input_bam, "GB") * 15)
 
     String fastq1 = prefix + "_1.fastq"
     String fastq2 = prefix + "_2.fastq"
