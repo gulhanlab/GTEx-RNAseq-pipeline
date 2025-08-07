@@ -1,4 +1,4 @@
-version development
+version 1.2
 
 import "tasks.wdl" as tasks
 
@@ -33,8 +33,8 @@ workflow rnaseq_pipeline_bam_workflow {
         Int rsem_num_preempt
 
         # RNASEQC2
-        File genes_gtf
-        File? intervals_bed
+        File rnaseqc2_genes_gtf
+        File? rnaseqc2_intervals_bed
         Int rnaseqc2_memoryMB
         Int rnaseqc2_num_cpu
         Int rnaseqc2_num_preempt
@@ -82,11 +82,11 @@ workflow rnaseq_pipeline_bam_workflow {
     call tasks.rnaseqc2 {
         input:
             bam_file = markduplicates.bam_file,
-            genes_gtf = genes_gtf,
+            genes_gtf = rnaseqc2_genes_gtf,
             sample_id = prefix,
             # reference_fasta = reference_fasta,
             # reference_fasta_index = reference_fasta_index,
-            intervals_bed = intervals_bed,
+            intervals_bed = rnaseqc2_intervals_bed,
             memoryMB = rnaseqc2_memoryMB,
             num_cpu = rnaseqc2_num_cpu,
             num_preempt = rnaseqc2_num_preempt
