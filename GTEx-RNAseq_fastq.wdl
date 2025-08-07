@@ -1,4 +1,4 @@
-# WDL draft-2
+version development
 
 import "tasks.wdl" as tasks
 

@@ -1,4 +1,4 @@
-version development # version 1.2
+version development
 
 import "tasks.wdl" as tasks
 
