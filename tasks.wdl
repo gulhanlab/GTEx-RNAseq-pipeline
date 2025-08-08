@@ -8,11 +8,12 @@ task samtofastq {
         # Optional only if CRAM
         # File? reference_fasta
         # File? reference_fasta_index
-        Int memoryMB
-        Int num_cpu
-        Int num_preempt
+
+        Int boot_disk_sizeGB
+        Int memoryMB = 16384
+        Int num_cpu = 1
     }
-    Int java_memory = floor(memoryMB - 500)
+    Int java_memory = floor(memoryMB - 512)
     Int diskGB = ceil(size(input_bam, "GB") * 15)
 
     String fastq1 = prefix + "_1.fastq"
@@ -37,11 +38,13 @@ task samtofastq {
 
         echo "$(date +'[%Y-%m-%d %H:%M:%S]') SamToFastq completed successfully"
 
-        echo "$(date +'[%Y-%m-%d %H:%M:%S]') Compressing FASTQs..."
-        gzip -9 '~{fastq1}'
-        gzip -9 '~{fastq2}'
+        echo "$(date +'[%Y-%m-%d %H:%M:%S]') Compressing FASTQ 1.."
+        gzip -f '~{fastq1}'
 
-        echo "Removing unpaired FASTQ"
+        echo "$(date +'[%Y-%m-%d %H:%M:%S]') Compressing FASTQ 2.."
+        gzip -f '~{fastq2}'
+
+        echo "$(date +'[%Y-%m-%d %H:%M:%S]') Removing unpaired FASTQ"
         rm -f '~{fastq0}'
 
         echo "$(date +'[%Y-%m-%d %H:%M:%S]') Compression completed successfully"
@@ -55,9 +58,9 @@ task samtofastq {
     runtime {
         docker: "gcr.io/broad-cga-francois-gtex/gtex_rnaseq:V11"
         memory: "~{memoryMB} MB"
+        bootDiskSizeGb: boot_disk_sizeGB
         disks: "local-disk ~{diskGB} HDD"
         cpu: num_cpu
-        preemptible: num_preempt
     }
 }
 
@@ -66,9 +69,10 @@ task fastqc {
     input {
         File fastq1
         File fastq2
-        Int memoryMB
-        Int num_cpu
-        Int num_preempt
+
+        Int boot_disk_sizeGB
+        Int memoryMB = 2560
+        Int num_cpu = 1
     }
 
     Int diskGB = ceil((size(fastq1, "GB") + size(fastq2, "GB")) * 2)
@@ -91,8 +95,8 @@ task fastqc {
             --threads ~{num_cpu} \
             --outdir .
 
-        unzip -p '~{fastq1_name}_fastqc.zip' '~{fastq1_name}_fastqc/fastqc_data.txt' | gzip > '~{fastq1_name}.fastqc_data.txt.gz'
-        unzip -p '~{fastq2_name}_fastqc.zip' '~{fastq2_name}_fastqc/fastqc_data.txt' | gzip > '~{fastq2_name}.fastqc_data.txt.gz'
+        unzip -p '~{fastq1_name}_fastqc.zip' '~{fastq1_name}_fastqc/fastqc_data.txt' | gzip -f > '~{fastq1_name}.fastqc_data.txt.gz'
+        unzip -p '~{fastq2_name}_fastqc.zip' '~{fastq2_name}_fastqc/fastqc_data.txt' | gzip -f > '~{fastq2_name}.fastqc_data.txt.gz'
 
         echo "$(date +'[%Y-%m-%d %H:%M:%S]') FastQC completed successfully"
     >>>
@@ -110,15 +114,14 @@ task fastqc {
     runtime {
         docker: "gcr.io/broad-cga-francois-gtex/gtex_rnaseq:V11"
         memory: "~{memoryMB} MB"
+        bootDiskSizeGb: boot_disk_sizeGB
         disks: "local-disk ~{diskGB} HDD"
         cpu: num_cpu
-        preemptible: num_preempt
     }
 }
 
 # star
 task star {
-
     input {
         File fastq1
         File fastq2
@@ -156,9 +159,9 @@ task star {
         Int? winAnchorMultimapNmax
         String? genomeTransformOutput
 
-        Int memoryMB
-        Int num_cpu
-        Int num_preempt
+        Int boot_disk_sizeGB
+        Int memoryMB = 49152
+        Int num_cpu = 8
     }
 
     Int diskGB = ceil((size(fastq1, "GB") + size(fastq2, "GB") + size(star_index, "GB")) * 3)
@@ -243,11 +246,11 @@ task star {
         # V11 used 2.7.11a that doesn't have quantTranscriptomeSAMoutput
         # V11 uses 2.7.11b that does have quantTranscriptomeSAMoutput BanSingleEnd_ExtendSoftclip
         # https://github.com/alexdobin/STAR/releases
-        docker: "gcr.io/broad-cga-francois-gtex/gtex_rnaseq:V11" 
+        docker: "gcr.io/broad-cga-francois-gtex/gtex_rnaseq:V11"
+        bootDiskSizeGb: boot_disk_sizeGB
         memory: "~{memoryMB} MB"
         disks: "local-disk ~{diskGB} HDD"
         cpu: num_cpu
-        preemptible: num_preempt
     }
 }
 
@@ -259,12 +262,12 @@ task markduplicates {
         Int? max_records_in_ram
         Float? sorting_collection_size_ratio
 
-        Int memoryMB
-        Int num_cpu
-        Int num_preempt
+        Int boot_disk_sizeGB
+        Int memoryMB = 16384
+        Int num_cpu = 1
     }
     
-    Int java_memory = floor(memoryMB - 500)
+    Int java_memory = floor(memoryMB - 512)
     Int diskGB = ceil(size(input_bam, "GB") * 3)
     String output_bam = sub(basename(input_bam), "\\.bam$", ".md.bam")
     String output_bai = output_bam + ".bai"
@@ -300,10 +303,10 @@ task markduplicates {
 
     runtime {
         docker: "gcr.io/broad-cga-francois-gtex/gtex_rnaseq:V11"
+        bootDiskSizeGb: boot_disk_sizeGB
         memory: "~{memoryMB} MB"
         disks: "local-disk ~{diskGB} HDD"
         cpu: num_cpu
-        preemptible: num_preempt
     }
 }
 
@@ -319,9 +322,9 @@ task rsem {
         Boolean is_stranded = false
         Boolean paired_end = true
 
-        Int memoryMB
-        Int num_cpu
-        Int num_preempt
+        Int boot_disk_sizeGB
+        Int memoryMB = 32768
+        Int num_cpu = 8
     }
 
     Int diskGB = ceil((size(transcriptome_bam, "GB") + size(rsem_reference, "GB")) * 7.5)
@@ -359,10 +362,10 @@ task rsem {
 
     runtime {
         docker: "gcr.io/broad-cga-francois-gtex/gtex_rnaseq:V11"
+        bootDiskSizeGb: boot_disk_sizeGB
         memory: "~{memoryMB} MB"
         disks: "local-disk ~{diskGB} HDD"
         cpu: num_cpu
-        preemptible: num_preempt
     }
 }
 
@@ -379,9 +382,9 @@ task rnaseqc2 {
         File? reference_fasta_index
         String? flags
 
-        Int memoryMB
-        Int num_cpu
-        Int num_preempt
+        Int boot_disk_sizeGB
+        Int memoryMB = 2048
+        Int num_cpu = 1
     }
 
     Int diskGB = ceil((size(bam_file, "GB") + size(genes_gtf, "GB") + size(intervals_bed, "GB") + size(reference_fasta, "GB")) * 2.5)
@@ -418,10 +421,9 @@ task rnaseqc2 {
 
     runtime {
         docker: "gcr.io/broad-cga-francois-gtex/gtex_rnaseq:V11"
+        bootDiskSizeGb: boot_disk_sizeGB
         memory: "~{memoryMB} MB"
         disks: "local-disk ~{diskGB} HDD"
         cpu: num_cpu
-        preemptible: num_preempt
     }
-
 }

@@ -14,40 +14,37 @@ workflow rnaseq_pipeline_fastq_workflow {
         # FASTQC
         Int fastqc_memoryMB
         Int fastqc_num_cpu
-        Int fastqc_num_preempt
 
         # STAR
         File star_index
         Int star_memoryMB
         Int star_num_cpu
-        Int star_num_preempt
 
         # MARKDUPLICATES
         Int markduplicates_memoryMB
         Int markduplicates_num_cpu
-        Int markduplicates_num_preempt
 
         # RSEM
         File rsem_reference
         Int rsem_memoryMB
         Int rsem_num_cpu
-        Int rsem_num_preempt
 
         # RNASEQC2
         File rnaseqc2_genes_gtf
         File? rnaseqc2_intervals_bed
         Int rnaseqc2_memoryMB
         Int rnaseqc2_num_cpu
-        Int rnaseqc2_num_preempt
+
+        Int boot_disk_sizeGB = 10
     }
 
     call tasks.fastqc {
         input:
             fastq1 = input_fastq1,
             fastq2 = input_fastq2,
+            boot_disk_sizeGB = boot_disk_sizeGB,
             memoryMB = fastqc_memoryMB,
-            num_cpu = fastqc_num_cpu,
-            num_preempt = fastqc_num_preempt
+            num_cpu = fastqc_num_cpu
     }
 
     call tasks.star {
@@ -56,18 +53,18 @@ workflow rnaseq_pipeline_fastq_workflow {
             fastq2 = input_fastq2,
             prefix = prefix,
             star_index = star_index,
+            boot_disk_sizeGB = boot_disk_sizeGB,
             memoryMB = star_memoryMB,
-            num_cpu = star_num_cpu,
-            num_preempt = star_num_preempt
+            num_cpu = star_num_cpu
     }
 
     call tasks.markduplicates {
         input:
             input_bam = star.bam_file,
             prefix = prefix,
+            boot_disk_sizeGB = boot_disk_sizeGB,
             memoryMB = markduplicates_memoryMB,
-            num_cpu = markduplicates_num_cpu,
-            num_preempt = markduplicates_num_preempt
+            num_cpu = markduplicates_num_cpu
     }
 
     call tasks.rsem {
@@ -75,9 +72,9 @@ workflow rnaseq_pipeline_fastq_workflow {
             transcriptome_bam = star.transcriptome_bam,
             rsem_reference = rsem_reference,
             prefix = prefix,
+            boot_disk_sizeGB = boot_disk_sizeGB,
             memoryMB = rsem_memoryMB,
-            num_cpu = rsem_num_cpu,
-            num_preempt = rsem_num_preempt
+            num_cpu = rsem_num_cpu
     }
 
     call tasks.rnaseqc2 {
@@ -88,9 +85,9 @@ workflow rnaseq_pipeline_fastq_workflow {
             # reference_fasta = reference_fasta,
             # reference_fasta_index = reference_fasta_index,
             intervals_bed = rnaseqc2_intervals_bed,
+            boot_disk_sizeGB = boot_disk_sizeGB,
             memoryMB = rnaseqc2_memoryMB,
-            num_cpu = rnaseqc2_num_cpu,
-            num_preempt = rnaseqc2_num_preempt
+            num_cpu = rnaseqc2_num_cpu
     }
     
     output {
