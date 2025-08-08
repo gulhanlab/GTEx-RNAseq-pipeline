@@ -243,7 +243,7 @@ task star {
     }
 
     runtime {
-        # V11 used 2.7.11a that doesn't have quantTranscriptomeSAMoutput
+        # V10 used 2.7.11a that doesn't have quantTranscriptomeSAMoutput
         # V11 uses 2.7.11b that does have quantTranscriptomeSAMoutput BanSingleEnd_ExtendSoftclip
         # https://github.com/alexdobin/STAR/releases
         docker: "gcr.io/broad-cga-francois-gtex/gtex_rnaseq:V11"
