@@ -324,7 +324,7 @@ task rsem {
         Int num_preempt
     }
 
-    Int diskGB = ceil(size(transcriptome_bam, "GB") * 2.5)
+    Int diskGB = ceil((size(transcriptome_bam, "GB") + size(rsem_reference, "GB")) * 7.5)
 
     command <<< 
         set -euo pipefail
