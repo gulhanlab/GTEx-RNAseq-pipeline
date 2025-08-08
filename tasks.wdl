@@ -57,8 +57,8 @@ task samtofastq {
 
     runtime {
         docker: "gcr.io/broad-cga-francois-gtex/gtex_rnaseq:V11"
-        memory: "~{memoryMB} MB"
         bootDiskSizeGb: boot_disk_sizeGB
+        memory: "~{memoryMB} MB"
         disks: "local-disk ~{diskGB} HDD"
         cpu: num_cpu
     }
@@ -113,8 +113,8 @@ task fastqc {
 
     runtime {
         docker: "gcr.io/broad-cga-francois-gtex/gtex_rnaseq:V11"
-        memory: "~{memoryMB} MB"
         bootDiskSizeGb: boot_disk_sizeGB
+        memory: "~{memoryMB} MB"
         disks: "local-disk ~{diskGB} HDD"
         cpu: num_cpu
     }
