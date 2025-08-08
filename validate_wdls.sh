@@ -17,7 +17,7 @@ check_womtool() {
 }
 
 # Loop over all main WDL files.
-for wdl in *.wdl; do
+for wdl in wdl/*.wdl; do
   # check_miniwdl "$wdl"
   check_womtool "$wdl"
 done
