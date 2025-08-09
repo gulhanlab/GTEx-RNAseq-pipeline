@@ -62,10 +62,10 @@ RUN cd /opt && \
     tar -xf v2.4.1.tar.gz && rm v2.4.1.tar.gz && cd bamtools-2.4.1 && mkdir build && cd build && cmake .. && make && make install && make clean
 ENV LD_LIBRARY_PATH /usr/local/lib/bamtools:$LD_LIBRARY_PATH
 
-# bamsync
-COPY bamsync /opt/bamsync
-RUN cd /opt/bamsync && make
-ENV PATH /opt/bamsync:$PATH
+# # bamsync
+# COPY bamsync /opt/bamsync
+# RUN cd /opt/bamsync && make
+# ENV PATH /opt/bamsync:$PATH
 
 # Picard tools
 RUN mkdir /opt/picard-tools && \
