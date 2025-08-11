@@ -8,6 +8,7 @@ workflow rnaseq_pipeline_fastq_workflow {
         String prefix
         File input_fastq1
         File input_fastq2
+        Boolean? use_hg19
         # File? reference_fasta
         # File? reference_fasta_index
 
@@ -38,13 +39,18 @@ workflow rnaseq_pipeline_fastq_workflow {
         Int boot_disk_sizeGB = 10
     }
 
+    # Default docker to use hg38, only use hg19 if specified
+    # This is needed as STAR version is sensitive to different genome versions
+    String docker_image = if defined(use_hg19) then "gulhanlab/gtex-rnaseq-pipeline:hg19_v1" else "gulhanlab/gtex-rnaseq-pipeline:hg38_v1"
+
     call tasks.fastqc {
         input:
             fastq1 = input_fastq1,
             fastq2 = input_fastq2,
             boot_disk_sizeGB = boot_disk_sizeGB,
             memoryMB = fastqc_memoryMB,
-            num_cpu = fastqc_num_cpu
+            num_cpu = fastqc_num_cpu,
+            docker_image = docker_image
     }
 
     call tasks.star {
@@ -55,7 +61,8 @@ workflow rnaseq_pipeline_fastq_workflow {
             star_index = star_index,
             boot_disk_sizeGB = boot_disk_sizeGB,
             memoryMB = star_memoryMB,
-            num_cpu = star_num_cpu
+            num_cpu = star_num_cpu,
+            docker_image = docker_image
     }
 
     call tasks.markduplicates {
@@ -64,7 +71,8 @@ workflow rnaseq_pipeline_fastq_workflow {
             prefix = prefix,
             boot_disk_sizeGB = boot_disk_sizeGB,
             memoryMB = markduplicates_memoryMB,
-            num_cpu = markduplicates_num_cpu
+            num_cpu = markduplicates_num_cpu,
+            docker_image = docker_image
     }
 
     call tasks.rsem {
@@ -74,7 +82,8 @@ workflow rnaseq_pipeline_fastq_workflow {
             prefix = prefix,
             boot_disk_sizeGB = boot_disk_sizeGB,
             memoryMB = rsem_memoryMB,
-            num_cpu = rsem_num_cpu
+            num_cpu = rsem_num_cpu,
+            docker_image = docker_image
     }
 
     call tasks.rnaseqc2 {
@@ -87,7 +96,8 @@ workflow rnaseq_pipeline_fastq_workflow {
             intervals_bed = rnaseqc2_intervals_bed,
             boot_disk_sizeGB = boot_disk_sizeGB,
             memoryMB = rnaseqc2_memoryMB,
-            num_cpu = rnaseqc2_num_cpu
+            num_cpu = rnaseqc2_num_cpu,
+            docker_image = docker_image
     }
     
     output {

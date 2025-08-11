@@ -7,6 +7,7 @@ workflow rnaseq_pipeline_bam_workflow {
     input {
         String prefix
         File input_bam
+        Boolean? use_hg19
         # File? reference_fasta
         # File? reference_fasta_index
 
@@ -36,6 +37,9 @@ workflow rnaseq_pipeline_bam_workflow {
 
         Int boot_disk_sizeGB = 10
     }
+    # Default docker to use hg38, only use hg19 if specified
+    # This is needed as STAR version is sensitive to different genome versions
+    String docker_image = if defined(use_hg19) then "gulhanlab/gtex-rnaseq-pipeline:hg19_v1" else "gulhanlab/gtex-rnaseq-pipeline:hg38_v1"
 
     call tasks.samtofastq {
         input:
@@ -44,6 +48,7 @@ workflow rnaseq_pipeline_bam_workflow {
             boot_disk_sizeGB = boot_disk_sizeGB,
             memoryMB = samtofastq_memoryMB,
             num_cpu = samtofastq_num_cpu,
+            docker_image = docker_image
     }
 
     call tasks.star {
@@ -55,6 +60,7 @@ workflow rnaseq_pipeline_bam_workflow {
             boot_disk_sizeGB = boot_disk_sizeGB,
             memoryMB = star_memoryMB,
             num_cpu = star_num_cpu,
+            docker_image = docker_image
     }
 
     call tasks.markduplicates {
@@ -64,6 +70,7 @@ workflow rnaseq_pipeline_bam_workflow {
             boot_disk_sizeGB = boot_disk_sizeGB,
             memoryMB = markduplicates_memoryMB,
             num_cpu = markduplicates_num_cpu,
+            docker_image = docker_image
     }
 
     call tasks.rsem {
@@ -74,6 +81,7 @@ workflow rnaseq_pipeline_bam_workflow {
             boot_disk_sizeGB = boot_disk_sizeGB,
             memoryMB = rsem_memoryMB,
             num_cpu = rsem_num_cpu,
+            docker_image = docker_image
     }
 
     call tasks.rnaseqc2 {
@@ -87,6 +95,7 @@ workflow rnaseq_pipeline_bam_workflow {
             boot_disk_sizeGB = boot_disk_sizeGB,
             memoryMB = rnaseqc2_memoryMB,
             num_cpu = rnaseqc2_num_cpu,
+            docker_image = docker_image
     }
     
     output {

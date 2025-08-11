@@ -12,6 +12,7 @@ task samtofastq {
         Int boot_disk_sizeGB
         Int memoryMB = 16384
         Int num_cpu = 1
+        String? docker_image = "gulhanlab/gtex-rnaseq-pipeline:hg38_v1"
     }
     Int java_memory = floor(memoryMB - 512)
     Int diskGB = ceil(size(input_bam, "GB") * 15)
@@ -56,7 +57,7 @@ task samtofastq {
     }
 
     runtime {
-        docker: "gcr.io/broad-cga-francois-gtex/gtex_rnaseq:V11"
+        docker: docker_image
         bootDiskSizeGb: boot_disk_sizeGB
         memory: "~{memoryMB} MB"
         disks: "local-disk ~{diskGB} HDD"
@@ -73,6 +74,7 @@ task fastqc {
         Int boot_disk_sizeGB
         Int memoryMB = 2560
         Int num_cpu = 1
+        String? docker_image = "gulhanlab/gtex-rnaseq-pipeline:hg38_v1"
     }
 
     Int diskGB = ceil((size(fastq1, "GB") + size(fastq2, "GB")) * 2)
@@ -112,7 +114,7 @@ task fastqc {
     }
 
     runtime {
-        docker: "gcr.io/broad-cga-francois-gtex/gtex_rnaseq:V11"
+        docker: docker_image
         bootDiskSizeGb: boot_disk_sizeGB
         memory: "~{memoryMB} MB"
         disks: "local-disk ~{diskGB} HDD"
@@ -162,6 +164,7 @@ task star {
         Int boot_disk_sizeGB
         Int memoryMB = 49152
         Int num_cpu = 8
+        String? docker_image = "gulhanlab/gtex-rnaseq-pipeline:hg38_v1"
     }
 
     Int diskGB = ceil((size(fastq1, "GB") + size(fastq2, "GB") + size(star_index, "GB")) * 3)
@@ -246,7 +249,7 @@ task star {
         # V10 used 2.7.11a that doesn't have quantTranscriptomeSAMoutput
         # V11 uses 2.7.11b that does have quantTranscriptomeSAMoutput BanSingleEnd_ExtendSoftclip
         # https://github.com/alexdobin/STAR/releases
-        docker: "gcr.io/broad-cga-francois-gtex/gtex_rnaseq:V11"
+        docker: docker_image
         bootDiskSizeGb: boot_disk_sizeGB
         memory: "~{memoryMB} MB"
         disks: "local-disk ~{diskGB} HDD"
@@ -265,6 +268,7 @@ task markduplicates {
         Int boot_disk_sizeGB
         Int memoryMB = 16384
         Int num_cpu = 1
+        String? docker_image = "gulhanlab/gtex-rnaseq-pipeline:hg38_v1"
     }
     
     Int java_memory = floor(memoryMB - 512)
@@ -302,7 +306,7 @@ task markduplicates {
     }
 
     runtime {
-        docker: "gcr.io/broad-cga-francois-gtex/gtex_rnaseq:V11"
+        docker: docker_image
         bootDiskSizeGb: boot_disk_sizeGB
         memory: "~{memoryMB} MB"
         disks: "local-disk ~{diskGB} HDD"
@@ -325,6 +329,7 @@ task rsem {
         Int boot_disk_sizeGB
         Int memoryMB = 32768
         Int num_cpu = 8
+        String? docker_image = "gulhanlab/gtex-rnaseq-pipeline:hg38_v1"
     }
 
     Int diskGB = ceil((size(transcriptome_bam, "GB") + size(rsem_reference, "GB")) * 7.5)
@@ -361,7 +366,7 @@ task rsem {
     }
 
     runtime {
-        docker: "gcr.io/broad-cga-francois-gtex/gtex_rnaseq:V11"
+        docker: docker_image
         bootDiskSizeGb: boot_disk_sizeGB
         memory: "~{memoryMB} MB"
         disks: "local-disk ~{diskGB} HDD"
@@ -385,6 +390,7 @@ task rnaseqc2 {
         Int boot_disk_sizeGB
         Int memoryMB = 2048
         Int num_cpu = 1
+        String? docker_image = "gulhanlab/gtex-rnaseq-pipeline:hg38_v1"
     }
 
     Int diskGB = ceil((size(bam_file, "GB") + size(genes_gtf, "GB") + size(intervals_bed, "GB") + size(reference_fasta, "GB")) * 2.5)
@@ -420,7 +426,7 @@ task rnaseqc2 {
     }
 
     runtime {
-        docker: "gcr.io/broad-cga-francois-gtex/gtex_rnaseq:V11"
+        docker: docker_image
         bootDiskSizeGb: boot_disk_sizeGB
         memory: "~{memoryMB} MB"
         disks: "local-disk ~{diskGB} HDD"
