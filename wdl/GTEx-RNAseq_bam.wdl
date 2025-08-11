@@ -39,7 +39,7 @@ workflow rnaseq_pipeline_bam_workflow {
     }
     # Default docker to use hg38, only use hg19 if specified
     # This is needed as STAR version is sensitive to different genome versions
-    String docker_image = if defined(use_hg19) then "gulhanlab/gtex-rnaseq-pipeline:hg19_v1" else "gulhanlab/gtex-rnaseq-pipeline:hg38_v1"
+    String docker_image = if defined(use_hg19) then "gulhanlab/gtex-rnaseq-pipeline:hg19_v2" else "gulhanlab/gtex-rnaseq-pipeline:hg38_v2"
 
     call tasks.samtofastq {
         input:
