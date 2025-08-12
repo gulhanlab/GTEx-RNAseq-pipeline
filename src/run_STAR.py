@@ -122,7 +122,7 @@ if args.sjdbFileChrStartEnd is not None:
 if not os.path.exists(args.output_dir):
     os.makedirs(args.output_dir)
 
-# run STAR
+# 1. run STAR
 subprocess.check_call(cmd, shell=True, executable='/bin/bash')
 
 # postprocessing
@@ -136,20 +136,20 @@ with cd(args.output_dir):
     if os.path.exists(f'{args.prefix}._STARtmp'):
         shutil.rmtree(f'{args.prefix}._STARtmp')
 
-    # sort BAM (use samtools to get around the memory gluttony of STAR)
+    # 2. sort BAM (use samtools to get around the memory gluttony of STAR)
     print(f'[{datetime.now().strftime("%b %d %H:%M:%S")}] Sorting BAM', flush=True)
     cmd = f'samtools sort --threads {args.threads} -o {args.prefix}.Aligned.sortedByCoord.out.bam {args.prefix}.Aligned.out.bam'
     subprocess.check_call(cmd, shell=True, executable='/bin/bash')
     os.remove(f'{args.prefix}.Aligned.out.bam')
     print(f'[{datetime.now().strftime("%b %d %H:%M:%S")}] Finished sorting BAM', flush=True)
 
-    # index BAM
+    # 3. index BAM
     print(f'[{datetime.now().strftime("%b %d %H:%M:%S")}] Indexing BAM', flush=True)
     cmd = f'samtools index {args.prefix}.Aligned.sortedByCoord.out.bam'
     subprocess.check_call(cmd, shell=True, executable='/bin/bash')
     print(f'[{datetime.now().strftime("%b %d %H:%M:%S")}] Finished indexing BAM', flush=True)
 
-    # rename and compress outputs
+    # 4. rename and compress outputs
     subprocess.check_call(f'gzip {args.prefix}.SJ.out.tab', shell=True, executable='/bin/bash')
     with cd(f'{args.prefix}._STARpass1'):
         os.rename('SJ.out.tab', f'{args.prefix}.SJ.pass1.out.tab')
@@ -158,7 +158,7 @@ with cd(args.output_dir):
     if os.path.exists(f'{args.prefix}.ReadsPerGene.out.tab'):
         subprocess.check_call(f'gzip {args.prefix}.ReadsPerGene.out.tab', shell=True, executable='/bin/bash')
 
-    # sort and index chimeric BAM
+    # 5. sort and index chimeric BAM
     if os.path.exists(f'{args.prefix}.Chimeric.out.sam'):
         cmd = f'samtools sort --threads {args.threads} -o {args.prefix}.Chimeric.out.sorted.bam {args.prefix}.Chimeric.out.sam'
         subprocess.check_call(cmd, shell=True, executable='/bin/bash')

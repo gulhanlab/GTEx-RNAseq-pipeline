@@ -12,7 +12,7 @@ task samtofastq {
         Int boot_disk_sizeGB
         Int memoryMB = 16384
         Int num_cpu = 1
-        String? docker_image = "gulhanlab/gtex-rnaseq-pipeline:hg38_v1"
+        String? docker_image = "gulhanlab/gtex-rnaseq-pipeline:hg38_v2"
     }
     Int java_memory = floor(memoryMB - 512)
     Int diskGB = ceil(size(input_bam, "GB") * 15)
@@ -74,7 +74,7 @@ task fastqc {
         Int boot_disk_sizeGB
         Int memoryMB = 2560
         Int num_cpu = 1
-        String? docker_image = "gulhanlab/gtex-rnaseq-pipeline:hg38_v1"
+        String? docker_image = "gulhanlab/gtex-rnaseq-pipeline:hg38_v2"
     }
 
     Int diskGB = ceil((size(fastq1, "GB") + size(fastq2, "GB")) * 2)
@@ -164,7 +164,7 @@ task star {
         Int boot_disk_sizeGB
         Int memoryMB = 49152
         Int num_cpu = 8
-        String? docker_image = "gulhanlab/gtex-rnaseq-pipeline:hg38_v1"
+        String? docker_image = "gulhanlab/gtex-rnaseq-pipeline:hg38_v2"
     }
 
     Int diskGB = ceil((size(fastq1, "GB") + size(fastq2, "GB") + size(star_index, "GB")) * 3)
@@ -268,7 +268,7 @@ task markduplicates {
         Int boot_disk_sizeGB
         Int memoryMB = 16384
         Int num_cpu = 1
-        String? docker_image = "gulhanlab/gtex-rnaseq-pipeline:hg38_v1"
+        String? docker_image = "gulhanlab/gtex-rnaseq-pipeline:hg38_v2"
     }
     
     Int java_memory = floor(memoryMB - 512)
@@ -329,7 +329,7 @@ task rsem {
         Int boot_disk_sizeGB
         Int memoryMB = 32768
         Int num_cpu = 8
-        String? docker_image = "gulhanlab/gtex-rnaseq-pipeline:hg38_v1"
+        String? docker_image = "gulhanlab/gtex-rnaseq-pipeline:hg38_v2"
     }
 
     Int diskGB = ceil((size(transcriptome_bam, "GB") + size(rsem_reference, "GB")) * 7.5)
@@ -390,7 +390,7 @@ task rnaseqc2 {
         Int boot_disk_sizeGB
         Int memoryMB = 2048
         Int num_cpu = 1
-        String? docker_image = "gulhanlab/gtex-rnaseq-pipeline:hg38_v1"
+        String? docker_image = "gulhanlab/gtex-rnaseq-pipeline:hg38_v2"
     }
 
     Int diskGB = ceil((size(bam_file, "GB") + size(genes_gtf, "GB") + size(intervals_bed, "GB") + size(reference_fasta, "GB")) * 2.5)
