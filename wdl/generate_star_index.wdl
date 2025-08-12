@@ -7,11 +7,14 @@ workflow star_index_workflow {
         File reference_fasta_index
         File gencode_annotation_gtf
         Int overhang # fastq read length - 1
+        Boolean? use_hg19
 
         Int boot_disk_sizeGB = 10
         Int memoryMB = 49152
         Int num_cpu = 8
     }
+
+    String docker_image = if defined(use_hg19) then "gulhanlab/gtex-rnaseq-pipeline:hg19_v2" else "gulhanlab/gtex-rnaseq-pipeline:hg38_v2"
 
     call star_index {
         input:
@@ -22,7 +25,8 @@ workflow star_index_workflow {
             overhang = overhang,
             boot_disk_sizeGB = boot_disk_sizeGB,
             memoryMB = memoryMB,
-            num_cpu = num_cpu
+            num_cpu = num_cpu,
+            docker_image = docker_image
     }
 
     output {
