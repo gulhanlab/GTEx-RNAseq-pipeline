@@ -18,8 +18,17 @@ workflows:
       - name: Garrett Lam
         email: glam@broadinstitute.org
   
+  - name: GenerateSTARIndex
+    description: Workflow to generate a STAR genome index
+    subclass: WDL
+    publish: true
+    primaryDescriptorPath: /wdl/generate_star_index.wdl
+    authors:
+      - name: Garrett Lam
+        email: glam@broadinstitute.org
+  
   - name: samtools_idx
-    description: Task to index BAM files using samtools
+    description: Workflow to index BAM files using samtools
     subclass: WDL
     publish: true
     primaryDescriptorPath: /wdl/samtools_idx.wdl
