@@ -9,8 +9,8 @@ workflow rsem_reference_workflow {
         Boolean? use_hg19
 
         Int boot_disk_sizeGB = 10
-        Int memoryMB = 49152
-        Int num_cpu = 8
+        Int memoryMB = 8192
+        Int num_cpu = 2
     }
 
     String docker_image = if defined(use_hg19) then "gulhanlab/gtex-rnaseq-pipeline:hg19_v2" else "gulhanlab/gtex-rnaseq-pipeline:hg38_v2"
@@ -41,8 +41,8 @@ task rsem_reference {
         File gencode_annotation_gtf
 
         Int boot_disk_sizeGB
-        Int memoryMB = 32768
-        Int num_cpu = 4
+        Int memoryMB = 8192
+        Int num_cpu = 2
         
         String? docker_image = "gulhanlab/gtex-rnaseq-pipeline:hg38_v2" 
     }
