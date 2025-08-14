@@ -27,6 +27,15 @@ workflows:
       - name: Garrett Lam
         email: glam@broadinstitute.org
   
+  - name: GenerateRSEMReference
+    description: Workflow to generate RSEM reference
+    subclass: WDL
+    publish: true
+    primaryDescriptorPath: /wdl/generate_rsem_reference.wdl
+    authors:
+      - name: Garrett Lam
+        email: glam@broadinstitute.org
+  
   - name: samtools_idx
     description: Workflow to index BAM files using samtools
     subclass: WDL

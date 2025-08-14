@@ -1,12 +1,11 @@
 version development
 
-workflow star_index_workflow {
+workflow rsem_reference_workflow {
     input {
-        String star_index_name
+        String rsem_reference_name
         File reference_fasta
         File reference_fasta_index
         File gencode_annotation_gtf
-        Int overhang # fastq read length - 1
         Boolean? use_hg19
 
         Int boot_disk_sizeGB = 10
@@ -16,13 +15,12 @@ workflow star_index_workflow {
 
     String docker_image = if defined(use_hg19) then "gulhanlab/gtex-rnaseq-pipeline:hg19_v2" else "gulhanlab/gtex-rnaseq-pipeline:hg38_v2"
 
-    call star_index {
+    call rsem_reference {
         input:
-            star_index_name = star_index_name,
+            rsem_reference_name = rsem_reference_name,
             reference_fasta = reference_fasta,
             reference_fasta_index = reference_fasta_index,
             gencode_annotation_gtf = gencode_annotation_gtf,
-            overhang = overhang,
             boot_disk_sizeGB = boot_disk_sizeGB,
             memoryMB = memoryMB,
             num_cpu = num_cpu,
@@ -30,51 +28,46 @@ workflow star_index_workflow {
     }
 
     output {
-        File output_star_index = star_index.star_index_tar
+        File output_rsem_reference = rsem_reference.rsem_reference_tar
     }
 }
 
 
-task star_index {
+task rsem_reference {
     input {
-        String star_index_name
+        String rsem_reference_name
         File reference_fasta
         File reference_fasta_index
         File gencode_annotation_gtf
-        Int overhang # fastq read length - 1
 
         Int boot_disk_sizeGB
-        Int memoryMB = 49152
-        Int num_cpu = 8
+        Int memoryMB = 32768
+        Int num_cpu = 4
         
         String? docker_image = "gulhanlab/gtex-rnaseq-pipeline:hg38_v2" 
     }
 
-    Int diskGB = 150
+    Int diskGB = 50
     
     command <<<
         set -euo pipefail
 
-        # echo the STAR version
-        echo "Using STAR version:"
-        STAR --version
+        mkdir -p ~{rsem_reference_name}
+        cd ~{rsem_reference_name}
 
-        # Create STAR index directory
-        mkdir -p ~{star_index_name}
-        STAR \
-            --runMode genomeGenerate \
-            --genomeDir ~{star_index_name} \
-            --genomeFastaFiles ~{reference_fasta} \
-            --sjdbGTFfile ~{gencode_annotation_gtf} \
-            --sjdbOverhang ~{overhang} \
-            --runThreadN ~{num_cpu}
+        # Prepare RSEM ref
+        rsem-prepare-reference \
+            ~{reference_fasta} \
+            ~{rsem_reference_name} \
+            --gtf ~{gencode_annotation_gtf} \
+            --num-threads ~{num_cpu}
 
-        # Create a tarball of the STAR index
-        tar -cvzf ~{star_index_name}.tar.gz ~{star_index_name}
+        cd ..
+        tar -cvzf ~{rsem_reference_name}.tar.gz ~{rsem_reference_name}
     >>>
 
     output {
-        File star_index_tar = "~{star_index_name}.tar.gz"
+        File rsem_reference_tar = "~{rsem_reference_name}.tar.gz"
     }
     
     runtime {
