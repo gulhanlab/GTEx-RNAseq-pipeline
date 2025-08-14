@@ -31,7 +31,7 @@ workflow rnaseq_pipeline_bam_workflow {
 
         # RNASEQC2
         File rnaseqc2_genes_gtf
-        File? rnaseqc2_intervals_bed
+        # File? rnaseqc2_intervals_bed
         Int rnaseqc2_memoryMB
         Int rnaseqc2_num_cpu
 
@@ -91,7 +91,7 @@ workflow rnaseq_pipeline_bam_workflow {
             sample_id = prefix,
             # reference_fasta = reference_fasta,
             # reference_fasta_index = reference_fasta_index,
-            intervals_bed = rnaseqc2_intervals_bed,
+            # intervals_bed = rnaseqc2_intervals_bed,
             boot_disk_sizeGB = boot_disk_sizeGB,
             memoryMB = rnaseqc2_memoryMB,
             num_cpu = rnaseqc2_num_cpu,
