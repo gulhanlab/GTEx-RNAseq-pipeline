@@ -167,32 +167,28 @@ task star {
         String? docker_image = "gulhanlab/gtex-rnaseq-pipeline:hg38_v2"
     }
 
-    Int diskGB = ceil((size(fastq1, "GB") + size(fastq2, "GB") + size(star_index, "GB")) * 3)
+    Int diskGB = ceil((size(fastq1, "GB") + size(fastq2, "GB") + size(star_index, "GB")) * 5)
 
     command <<<
         set -euo pipefail
 
-        echo "FASTQs:"
+        echo "$(date +'[%Y-%m-%d %H:%M:%S]') Input FASTQs:"
         echo "~{fastq1}"
         echo "~{fastq2}"
 
+        # Extract the star index into star_index folder
         echo "$(date +'[%Y-%m-%d %H:%M:%S]') Extracting STAR index..."
-
-        # Extract the star index
         mkdir -p star_index
         tar -xvvf "~{star_index}" -C star_index --strip-components=1
 
-        # Place holders for optional outputs
-        mkdir -p star_out
-        touch star_out/"~{prefix}.Aligned.toTranscriptome.out.bam"
-        touch star_out/"~{prefix}.Chimeric.out.sorted.bam"
-        touch star_out/"~{prefix}.Chimeric.out.sorted.bam.bai"
-        touch star_out/"~{prefix}.ReadsPerGene.out.tab"
+        touch "~{prefix}.Aligned.toTranscriptome.out.bam"
+        touch "~{prefix}.Chimeric.out.sorted.bam"
+        touch "~{prefix}.Chimeric.out.sorted.bam.bai"
+        touch "~{prefix}.ReadsPerGene.out.tab" # run_STAR.py will gzip
 
         echo "$(date +'[%Y-%m-%d %H:%M:%S]') Running STAR alignment..."
         python3 /src/run_STAR.py \
             star_index '~{fastq1}' '~{fastq2}' '~{prefix}' \
-            --output_dir star_out \
             ~{"--outFilterMultimapNmax " + outFilterMultimapNmax} \
             ~{"--alignSJoverhangMin " + alignSJoverhangMin} \
             ~{"--alignSJDBoverhangMin " + alignSJDBoverhangMin} \
@@ -229,20 +225,21 @@ task star {
     >>>
 
     output {
-        File bam_file = "star_out/~{prefix}.Aligned.sortedByCoord.out.bam"
-        File bam_index = "star_out/~{prefix}.Aligned.sortedByCoord.out.bam.bai"
-        File transcriptome_bam = "star_out/~{prefix}.Aligned.toTranscriptome.out.bam"
-        File chimeric_junctions = "star_out/~{prefix}.Chimeric.out.junction.gz"
-        File chimeric_bam_file = "star_out/~{prefix}.Chimeric.out.sorted.bam"
-        File chimeric_bam_index = "star_out/~{prefix}.Chimeric.out.sorted.bam.bai"
-        File read_counts = "star_out/~{prefix}.ReadsPerGene.out.tab.gz"
-        File junctions = "star_out/~{prefix}.SJ.out.tab.gz"
-        File junctions_pass1 = "star_out/~{prefix}._STARpass1/~{prefix}.SJ.pass1.out.tab.gz"
+        File bam_file = "~{prefix}.Aligned.sortedByCoord.out.bam"
+        File bam_index = "~{prefix}.Aligned.sortedByCoord.out.bam.bai"
+        File junctions = "~{prefix}.SJ.out.tab.gz"
         Array[File] logs = [
-            "star_out/~{prefix}.Log.final.out",
-            "star_out/~{prefix}.Log.out",
-            "star_out/~{prefix}.Log.progress.out"
+            "~{prefix}.Log.final.out",
+            "~{prefix}.Log.out",
+            "~{prefix}.Log.progress.out"
         ]
+
+        File transcriptome_bam = "~{prefix}.Aligned.toTranscriptome.out.bam"
+        File chimeric_junctions = "~{prefix}.Chimeric.out.junction.gz"
+        File chimeric_bam_file = "~{prefix}.Chimeric.out.sorted.bam"
+        File chimeric_bam_index = "~{prefix}.Chimeric.out.sorted.bam.bai"
+        File read_counts = "~{prefix}.ReadsPerGene.out.tab.gz"
+        File junctions_pass1 = "~{prefix}._STARpass1/~{prefix}.SJ.pass1.out.tab.gz"
     }
 
     runtime {
