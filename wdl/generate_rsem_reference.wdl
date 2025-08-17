@@ -41,8 +41,8 @@ task rsem_reference {
         File gencode_annotation_gtf
 
         Int boot_disk_sizeGB
-        Int memoryMB = 8192
-        Int num_cpu = 2
+        Int memoryMB = 4096
+        Int num_cpu = 1
         
         String? docker_image = "gulhanlab/gtex-rnaseq-pipeline:hg38_v2" 
     }
@@ -55,10 +55,11 @@ task rsem_reference {
         mkdir -p ~{rsem_reference_name}
         cd ~{rsem_reference_name}
 
-        # Prepare RSEM ref
+        # Prepare RSEM reference folder named rsem_reference_name
+        # Files within this folder will have a prefix of "rsem_reference"
         rsem-prepare-reference \
             ~{reference_fasta} \
-            ~{rsem_reference_name} \
+            rsem_reference \
             --gtf ~{gencode_annotation_gtf} \
             --num-threads ~{num_cpu}
 
@@ -67,6 +68,14 @@ task rsem_reference {
     >>>
 
     output {
+        # Extracting the tar will contain the following files:
+        # ~{rsem_reference_name}/rsem_reference.chrlist
+        # ~{rsem_reference_name}/rsem_reference.grip
+        # ~{rsem_reference_name}/rsem_reference.idx.fa
+        # ~{rsem_reference_name}/rsem_reference.n2g.idx.fa
+        # ~{rsem_reference_name}/rsem_reference.seq
+        # ~{rsem_reference_name}/rsem_reference.ti
+        # ~{rsem_reference_name}/rsem_reference.transcripts.fa
         File rsem_reference_tar = "~{rsem_reference_name}.tar.gz"
     }
     
