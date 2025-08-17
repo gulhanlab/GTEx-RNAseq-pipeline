@@ -14,7 +14,7 @@ task samtofastq {
         Int num_cpu = 1
         String? docker_image = "gulhanlab/gtex-rnaseq-pipeline:hg38_v2"
     }
-    Int java_memory = floor(memoryMB - 512)
+    Int java_memory = floor(memoryMB * 0.8)
     Int diskGB = ceil(size(input_bam, "GB") * 15)
 
     String fastq1 = prefix + "_1.fastq"
@@ -268,7 +268,7 @@ task markduplicates {
         String? docker_image = "gulhanlab/gtex-rnaseq-pipeline:hg38_v2"
     }
     
-    Int java_memory = floor(memoryMB - 512)
+    Int java_memory = floor(memoryMB * 0.8)
     Int diskGB = ceil(size(input_bam, "GB") * 3)
     String output_bam = sub(basename(input_bam), "\\.bam$", ".md.bam")
     String output_bai = output_bam + ".bai"

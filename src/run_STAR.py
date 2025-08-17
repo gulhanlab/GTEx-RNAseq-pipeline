@@ -46,7 +46,7 @@ parser.add_argument('--outSAMattrRGline', default=['ID:rg1', 'SM:sm1'], nargs='+
 parser.add_argument('--outSAMattributes', default=['NH', 'HI', 'AS', 'nM', 'NM', 'ch'], nargs='+')
 parser.add_argument('--varVCFfile', default=None, help='VCF for the input sample; currently supports SNPs only')
 parser.add_argument('--waspOutputMode', default='SAMtag')
-#parser.add_argument('--quantTranscriptomeSAMoutput', default='BanSingleEnd_BanIndels_ExtendSoftclip', help='string: alignment filtering for TranscriptomeSAM output')
+#parser.add_argument('--quantTranscriptomeSAMoutput', default='BanSingleEnd_BanIndels_ExtendSoftclip', help='string: alignment filtering for TranscriptomeSAM output') # only available for STAR v.2.7.11b, hg38
 parser.add_argument('--quantTranscriptomeSAMoutput', default=None, help='string: alignment filtering for TranscriptomeSAM output')
 parser.add_argument('--winAnchorMultimapNmax', default='50', help='int>0: max number of loci anchors are allowed to map to')
 parser.add_argument('--genomeTransformOutput', default=None, nargs='+', help='string(s) which output to transform back to original genome')
