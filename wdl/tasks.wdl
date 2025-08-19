@@ -14,7 +14,7 @@ task samtofastq {
         Int num_cpu = 1
         String? docker_image = "gulhanlab/gtex-rnaseq-pipeline:hg38_v2"
     }
-    Int java_memory = floor(memoryMB * 0.8)
+    Int java_memory = floor(memoryMB * 0.85)
     Int diskGB = ceil(size(input_bam, "GB") * 15)
 
     String fastq1 = prefix + "_1.fastq"
@@ -72,7 +72,7 @@ task fastqc {
         File fastq2
 
         Int boot_disk_sizeGB
-        Int memoryMB = 2560
+        Int memoryMB = 2048
         Int num_cpu = 1
         String? docker_image = "gulhanlab/gtex-rnaseq-pipeline:hg38_v2"
     }
@@ -263,13 +263,13 @@ task markduplicates {
         Float? sorting_collection_size_ratio
 
         Int boot_disk_sizeGB
-        Int memoryMB = 16384
+        Int memoryMB = 32768
         Int num_cpu = 1
         String? docker_image = "gulhanlab/gtex-rnaseq-pipeline:hg38_v2"
     }
     
-    Int java_memory = floor(memoryMB * 0.8)
-    Int diskGB = ceil(size(input_bam, "GB") * 3)
+    Int java_memory = floor(memoryMB * 0.85)
+    Int diskGB = ceil(size(input_bam, "GB") * 5)
     String output_bam = sub(basename(input_bam), "\\.bam$", ".md.bam")
     String output_bai = output_bam + ".bai"
     String metrics_file = prefix + ".marked_dup_metrics.txt"
@@ -329,7 +329,7 @@ task rsem {
         String? docker_image = "gulhanlab/gtex-rnaseq-pipeline:hg38_v2"
     }
 
-    Int diskGB = ceil((size(transcriptome_bam, "GB") + size(rsem_reference, "GB")) * 7.5)
+    Int diskGB = ceil((size(transcriptome_bam, "GB") + size(rsem_reference, "GB")) * 5)
 
     command <<< 
         set -euo pipefail
@@ -390,7 +390,7 @@ task rnaseqc2 {
         String? docker_image = "gulhanlab/gtex-rnaseq-pipeline:hg38_v2"
     }
 
-    Int diskGB = ceil((size(bam_file, "GB") + size(genes_gtf, "GB") + size(intervals_bed, "GB") + size(reference_fasta, "GB")) * 2.5)
+    Int diskGB = ceil((size(bam_file, "GB") + size(genes_gtf, "GB") + size(intervals_bed, "GB") + size(reference_fasta, "GB")) * 2)
 
     command <<< 
         set -euo pipefail

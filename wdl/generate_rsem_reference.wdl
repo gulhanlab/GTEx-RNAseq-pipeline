@@ -9,8 +9,8 @@ workflow rsem_reference_workflow {
         Boolean? use_hg19
 
         Int boot_disk_sizeGB = 10
-        Int memoryMB = 8192
-        Int num_cpu = 2
+        Int memoryMB = 4096
+        Int num_cpu = 1
     }
 
     String docker_image = if defined(use_hg19) then "gulhanlab/gtex-rnaseq-pipeline:hg19_v2" else "gulhanlab/gtex-rnaseq-pipeline:hg38_v2"
@@ -78,7 +78,7 @@ task rsem_reference {
         # ~{rsem_reference_name}/rsem_reference.transcripts.fa
         File rsem_reference_tar = "~{rsem_reference_name}.tar.gz"
     }
-    
+
     runtime {
         docker: docker_image
         bootDiskSizeGb: boot_disk_sizeGB
