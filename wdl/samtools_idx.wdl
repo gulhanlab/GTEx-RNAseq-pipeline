@@ -1,11 +1,11 @@
 version development
 
-workflow samtools_idx {
+workflow samtools_index_workflow {
     input {
         File bam
     }
 
-    call samtoolsIndex {
+    call samtools_index {
         input:
             bam = bam
     }
@@ -16,15 +16,12 @@ workflow samtools_idx {
 }
 
 
-task samtoolsIndex {
+task samtools_index {
     input {
         File bam
         Int memoryMB = 1024
         Int boot_diskGB = 8
         Int num_cpu = 1
-        Int time = 30 
-        Int num_preempt = 1
-        Int max_retries = 1
         String docker_image = "staphb/samtools:1.21"
     }
     # COMPUTE DISK SIZE
@@ -41,12 +38,9 @@ task samtoolsIndex {
     
     runtime {
         docker: docker_image
-        memory: memoryMB + " MB"
-        cpu: num_cpu
-        runtime_minutes: time
         bootDiskSizeGb: boot_diskGB
-        disks: "local-disk " + diskGB + " HDD"
-        preemptible: num_preempt
-        maxRetries: max_retries
+        memory: "~{memoryMB} MB"
+        disks: "local-disk ~{diskGB} HDD"
+        cpu: num_cpu
     }
 }
