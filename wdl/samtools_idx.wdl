@@ -11,7 +11,7 @@ workflow samtools_index_workflow {
     }
 
     output {
-        File bai = samtoolsIndex.bai
+        File bai = samtools_index.bai
     }
 }
 
