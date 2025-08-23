@@ -10,7 +10,7 @@ task samtofastq {
         # File? reference_fasta_index
 
         Int boot_disk_sizeGB
-        Int memoryMB = 12288
+        Int memoryMB = 8192
         Int num_cpu = 1
         String? docker_image = "gulhanlab/gtex-rnaseq-pipeline:hg38_v2"
     }
@@ -162,8 +162,8 @@ task star {
         String? genomeTransformOutput
 
         Int boot_disk_sizeGB
-        Int memoryMB = 32768
-        Int num_cpu = 6
+        Int memoryMB = 40960
+        Int num_cpu = 8
         String? docker_image = "gulhanlab/gtex-rnaseq-pipeline:hg38_v2"
     }
 
@@ -263,7 +263,7 @@ task markduplicates {
         Float? sorting_collection_size_ratio
 
         Int boot_disk_sizeGB
-        Int memoryMB = 24576
+        Int memoryMB = 8192
         Int num_cpu = 1
         String? docker_image = "gulhanlab/gtex-rnaseq-pipeline:hg38_v2"
     }
@@ -325,7 +325,7 @@ task rsem {
 
         Int boot_disk_sizeGB
         Int memoryMB = 8192
-        Int num_cpu = 8
+        Int num_cpu = 12
         String? docker_image = "gulhanlab/gtex-rnaseq-pipeline:hg38_v2"
     }
 
