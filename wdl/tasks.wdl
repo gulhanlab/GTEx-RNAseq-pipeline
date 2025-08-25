@@ -15,7 +15,7 @@ task samtofastq {
         String? docker_image = "gulhanlab/gtex-rnaseq-pipeline:hg38_v2"
     }
     Int java_memory = floor(memoryMB * 0.85)
-    Int diskGB = ceil(size(input_bam, "GB") * 8)
+    Int diskGB = ceil(size(input_bam, "GB") * 10) # fastqs can be really big
 
     String fastq1 = prefix + "_1.fastq"
     String fastq2 = prefix + "_2.fastq"
